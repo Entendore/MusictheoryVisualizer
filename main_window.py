@@ -44,63 +44,64 @@ class MainWindow(QMainWindow):
 
         self.mode_tabs=QTabWidget()
         for m in ['Scale','Chord','Prog']: self.mode_tabs.addTab(QWidget(),m)
-        self.mode_tabs.currentChanged.connect(self._on_mode_changed); lv.addWidget(self.mode_tabs)
+        lv.addWidget(self.mode_tabs)
 
         lv.addWidget(QLabel('Root Note:'))
-        self.root_combo=QComboBox(); self.root_combo.addItems(MT.NOTES); self.root_combo.currentIndexChanged.connect(self._on_root_changed); lv.addWidget(self.root_combo)
+        self.root_combo=QComboBox(); self.root_combo.addItems(MT.NOTES); lv.addWidget(self.root_combo)
         tr_h=QHBoxLayout()
-        btn_tdown=QPushButton('♭'); btn_tdown.setFixedWidth(35); btn_tdown.clicked.connect(lambda:self._transpose(-1))
-        btn_tup=QPushButton('♯'); btn_tup.setFixedWidth(35); btn_tup.clicked.connect(lambda:self._transpose(1))
+        btn_tdown=QPushButton('♭'); btn_tdown.setFixedWidth(35)
+        btn_tup=QPushButton('♯'); btn_tup.setFixedWidth(35)
         tr_h.addWidget(btn_tdown); tr_h.addWidget(btn_tup); lv.addLayout(tr_h)
 
-        self.scale_combo=QComboBox(); self.scale_combo.addItems(MT.SCALES.keys()); self.scale_combo.currentTextChanged.connect(self._on_scale_changed)
+        self.scale_combo=QComboBox(); self.scale_combo.addItems(MT.SCALES.keys())
         self.scale_label=QLabel('Scale:'); lv.addWidget(self.scale_label); lv.addWidget(self.scale_combo)
 
-        self.chord_combo=QComboBox(); self.chord_combo.addItems(MT.CHORD_TYPES.keys()); self.chord_combo.currentTextChanged.connect(self._on_chord_changed)
+        self.chord_combo=QComboBox(); self.chord_combo.addItems(MT.CHORD_TYPES.keys())
         self.chord_label=QLabel('Chord Type:'); lv.addWidget(self.chord_label); lv.addWidget(self.chord_combo)
 
-        self.prog_combo=QComboBox(); self.prog_combo.addItems(MT.PROGRESSIONS.keys()); self.prog_combo.currentTextChanged.connect(self._on_prog_changed)
+        self.prog_combo=QComboBox(); self.prog_combo.addItems(MT.PROGRESSIONS.keys())
         self.prog_label=QLabel('Progression:'); lv.addWidget(self.prog_label); lv.addWidget(self.prog_combo)
 
-        bpm_h=QHBoxLayout(); bpm_h.addWidget(QLabel('BPM:')); self.bpm_spin=QSpinBox(); self.bpm_spin.setRange(30,300); self.bpm_spin.setValue(120); self.bpm_spin.valueChanged.connect(lambda v:setattr(self,'bpm',v)); bpm_h.addWidget(self.bpm_spin); lv.addLayout(bpm_h)
-        wt_h=QHBoxLayout(); wt_h.addWidget(QLabel('Sound:')); self.wave_combo=QComboBox(); self.wave_combo.addItems(['Piano','Sine','Synth']); self.wave_combo.currentTextChanged.connect(lambda t:setattr(self.audio,'wave_type',t)); wt_h.addWidget(self.wave_combo); lv.addLayout(wt_h)
+        bpm_h=QHBoxLayout(); bpm_h.addWidget(QLabel('BPM:')); self.bpm_spin=QSpinBox(); self.bpm_spin.setRange(30,300); self.bpm_spin.setValue(120); bpm_h.addWidget(self.bpm_spin); lv.addLayout(bpm_h)
+        wt_h=QHBoxLayout(); wt_h.addWidget(QLabel('Sound:')); self.wave_combo=QComboBox(); self.wave_combo.addItems(['Piano','Sine','Synth']); wt_h.addWidget(self.wave_combo); lv.addLayout(wt_h)
 
-        self.show_names_chk=QCheckBox('Note Names'); self.show_names_chk.setChecked(True); self.show_names_chk.toggled.connect(lambda v:setattr(self.piano,'show_names',v)); lv.addWidget(self.show_names_chk)
-        self.show_degrees_chk=QCheckBox('Scale Degrees'); self.show_degrees_chk.toggled.connect(self._on_show_degrees); lv.addWidget(self.show_degrees_chk)
-        self.glow_chk=QCheckBox('Glow Effects'); self.glow_chk.setChecked(True); self.glow_chk.toggled.connect(lambda v:setattr(self.piano,'glow_enabled',v)); lv.addWidget(self.glow_chk)
-        self.guitar_chk=QCheckBox('Guitar Fretboard'); self.guitar_chk.setChecked(True); self.guitar_chk.toggled.connect(lambda v:self.guitar.setVisible(v)); lv.addWidget(self.guitar_chk)
+        self.show_names_chk=QCheckBox('Note Names')
+        self.show_degrees_chk=QCheckBox('Scale Degrees')
+        self.glow_chk=QCheckBox('Glow Effects')
+        self.guitar_chk=QCheckBox('Guitar Fretboard')
+        lv.addWidget(self.show_names_chk); lv.addWidget(self.show_degrees_chk); lv.addWidget(self.glow_chk); lv.addWidget(self.guitar_chk)
 
-        th_h=QHBoxLayout(); th_h.addWidget(QLabel('Theme:')); self.theme_combo=QComboBox(); self.theme_combo.addItems(theme.names); self.theme_combo.currentTextChanged.connect(self._on_theme_changed); th_h.addWidget(self.theme_combo); lv.addLayout(th_h)
-        lo_h=QHBoxLayout(); lo_h.addWidget(QLabel('Layout:')); self.layout_combo=QComboBox(); self.layout_combo.addItems(['Landscape 16:9','Portrait 9:16','Square 1:1','Free']); self.layout_combo.currentTextChanged.connect(self._on_layout_changed); lo_h.addWidget(self.layout_combo); lv.addLayout(lo_h)
+        th_h=QHBoxLayout(); th_h.addWidget(QLabel('Theme:')); self.theme_combo=QComboBox(); self.theme_combo.addItems(theme.names); th_h.addWidget(self.theme_combo); lv.addLayout(th_h)
+        lo_h=QHBoxLayout(); lo_h.addWidget(QLabel('Layout:')); self.layout_combo=QComboBox(); self.layout_combo.addItems(['Landscape 16:9','Portrait 9:16','Square 1:1','Free']); lo_h.addWidget(self.layout_combo); lv.addLayout(lo_h)
 
         # Playback & Record
         lv.addWidget(QLabel('Playback & Record:'))
         pb_h=QHBoxLayout()
-        self.play_btn=QPushButton('▶ Play'); self.play_btn.clicked.connect(self._on_play); pb_h.addWidget(self.play_btn)
-        self.arp_btn=QPushButton('♪ Arp'); self.arp_btn.clicked.connect(self._on_arpeggio); pb_h.addWidget(self.arp_btn)
-        self.stop_btn=QPushButton('■ Stop'); self.stop_btn.setFixedWidth(50); self.stop_btn.clicked.connect(self._on_stop); pb_h.addWidget(self.stop_btn)
+        self.play_btn=QPushButton('▶ Play'); pb_h.addWidget(self.play_btn)
+        self.arp_btn=QPushButton('♪ Arp'); pb_h.addWidget(self.arp_btn)
+        self.stop_btn=QPushButton('■ Stop'); self.stop_btn.setFixedWidth(50); pb_h.addWidget(self.stop_btn)
         lv.addLayout(pb_h)
 
         self.rec_btn=QPushButton('⏺ Record to MP4'); self.rec_btn.setStyleSheet(f'color:{theme.accent_red}; font-weight:bold; font-size:13px; padding:8px;')
-        self.rec_btn.clicked.connect(self._on_record_toggle); lv.addWidget(self.rec_btn)
+        lv.addWidget(self.rec_btn)
         self.rec_status=QLabel(''); self.rec_status.setAlignment(Qt.AlignCenter); self.rec_status.setStyleSheet(f'color:{theme.accent_red};'); lv.addWidget(self.rec_status)
 
         lv.addWidget(QLabel('Title Overlay:'))
-        self.title_edit=QLineEdit(); self.title_edit.setPlaceholderText('e.g. C Major Scale'); self.title_edit.textChanged.connect(lambda t:self.overlay_title.setText(t)); lv.addWidget(self.title_edit)
+        self.title_edit=QLineEdit(); self.title_edit.setPlaceholderText('e.g. C Major Scale'); lv.addWidget(self.title_edit)
         lv.addStretch(); main_h.addWidget(left)
 
-        # RIGHT AREA
+        # RIGHT AREA (WIDGETS MUST BE CREATED BEFORE CONNECTING SIGNALS)
         self.main_splitter=QSplitter(Qt.Vertical)
 
         # Title + Piano
         piano_box=QWidget(); pv=QVBoxLayout(piano_box); pv.setContentsMargins(0,0,0,0)
         self.overlay_title=QLabel(''); self.overlay_title.setAlignment(Qt.AlignCenter); self.overlay_title.setFont(QFont('Segoe UI',16,QFont.Bold)); self.overlay_title.setStyleSheet(f'color:{theme.accent_gold}; background:transparent;'); self.overlay_title.setMaximumHeight(30); pv.addWidget(self.overlay_title)
-        self.piano=PianoKeyboard(); self.piano.note_clicked.connect(lambda m:self.audio.play_note(m,0.4)); pv.addWidget(self.piano)
+        self.piano=PianoKeyboard(); pv.addWidget(self.piano)
         self.main_splitter.addWidget(piano_box)
 
         # Middle row
         mid=QWidget(); mid_h=QHBoxLayout(mid); mid_h.setContentsMargins(0,0,0,0); mid_h.setSpacing(4)
-        self.circle=CircleOfFifths(); self.circle.key_clicked.connect(self._on_circle_key); mid_h.addWidget(self.circle,4)
+        self.circle=CircleOfFifths(); mid_h.addWidget(self.circle,4)
         vis_tabs=QTabWidget(); self.staff=StaffNotation(); vis_tabs.addTab(self.staff,'Staff'); mid_h.addWidget(vis_tabs,5)
         self.info=InfoPanel(); mid_h.addWidget(self.info,3)
         self.main_splitter.addWidget(mid)
@@ -109,12 +110,41 @@ class MainWindow(QMainWindow):
         self.guitar=GuitarFretboard(); self.main_splitter.addWidget(self.guitar)
 
         # Progression
-        self.prog_widget=ProgressionWidget(); self.prog_widget.chord_selected.connect(self._on_prog_chord); self.main_splitter.addWidget(self.prog_widget)
+        self.prog_widget=ProgressionWidget(); self.main_splitter.addWidget(self.prog_widget)
 
         self.main_splitter.setSizes([190,310,100,70]); main_h.addWidget(self.main_splitter,1)
 
-        self.statusBar().showMessage('Ready — Hit ⏺ Record to capture Play+Audio to MP4')
+        # --- ALL SIGNAL CONNECTIONS (Done after all widgets are instantiated) ---
+        self.mode_tabs.currentChanged.connect(self._on_mode_changed)
+        self.root_combo.currentIndexChanged.connect(self._on_root_changed)
+        btn_tdown.clicked.connect(lambda:self._transpose(-1))
+        btn_tup.clicked.connect(lambda:self._transpose(1))
+        self.scale_combo.currentTextChanged.connect(self._on_scale_changed)
+        self.chord_combo.currentTextChanged.connect(self._on_chord_changed)
+        self.prog_combo.currentTextChanged.connect(self._on_prog_changed)
+        self.bpm_spin.valueChanged.connect(lambda v:setattr(self,'bpm',v))
+        self.wave_combo.currentTextChanged.connect(lambda t:setattr(self.audio,'wave_type',t))
+        
+        self.show_names_chk.setChecked(True)
+        self.show_names_chk.toggled.connect(lambda v:setattr(self.piano,'show_names',v))
+        self.show_degrees_chk.toggled.connect(self._on_show_degrees)
+        self.glow_chk.setChecked(True)
+        self.glow_chk.toggled.connect(lambda v:setattr(self.piano,'glow_enabled',v))
+        self.guitar_chk.setChecked(True)
+        self.guitar_chk.toggled.connect(lambda v:self.guitar.setVisible(v))
+        
+        self.theme_combo.currentTextChanged.connect(self._on_theme_changed)
+        self.layout_combo.currentTextChanged.connect(self._on_layout_changed)
+        self.play_btn.clicked.connect(self._on_play)
+        self.arp_btn.clicked.connect(self._on_arpeggio)
+        self.stop_btn.clicked.connect(self._on_stop)
+        self.rec_btn.clicked.connect(self._on_record_toggle)
+        self.title_edit.textChanged.connect(lambda t:self.overlay_title.setText(t))
+        self.circle.key_clicked.connect(self._on_circle_key)
+        self.prog_widget.chord_selected.connect(self._on_prog_chord)
+        self.piano.note_clicked.connect(lambda m:self.audio.play_note(m,0.4))
 
+        self.statusBar().showMessage('Ready — Hit ⏺ Record to capture Play+Audio to MP4')
         self._update_mode_visibility()
 
     def _apply_dark_theme(self):
